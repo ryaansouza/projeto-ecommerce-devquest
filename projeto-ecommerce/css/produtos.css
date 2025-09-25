@@ -73,6 +73,7 @@ main .informacoes .adicionar-ao-carrinho {
     border: none;
     border-radius: 8px;
     color: var(--cor-neutra-clara);
+    letter-spacing: 0.1rem;
     padding: 1rem;
     cursor: pointer;
     margin-top: 0.5rem;
