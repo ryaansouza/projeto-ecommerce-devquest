@@ -1,33 +1,40 @@
 /*
 Objetivo 1 - quando clicar no botão de adicionar ao carrinho:
-    - atualizar o contador
-    - adicionar o produto no localStorage
-    - atualizar a tabela HTML do carrinho
+    - pegar os botões de adicionar ao carrinho do html
+    - adicionar um evento de escuta nos botões para disparar um evento de clique
+    - pegar as informações do produto clicado e adicionar no localStorage
+    - atualizar o contador do carrinho de compras
+    - renderizar a tabela do carrinho de compras
 
 Objetivo 2 - remover produtos do carrinho:
-    - ouvir o botão de deletar
+    - pegar botão de deletar do html
+    - adicionar evento de escuta no botão para disparar um evento de clique
     - remover do localStorage
-    - atualizar o DOM e o total
+    - atualizar o html do carrinho, retirando o produto deletado
+    - atualizar o valor total
 
 Objetivo 3 - atualizar valores do carrinho:
-    - ouvir mudanças de quantidade
-    - recalcular total individual
-    - recalcular total geral
+    - pegar os inputs de quantidade do carrinho
+    - adicionar evento de escuta nesses inputs
+    - atualizar o valor total do produto
+    - atualizar o valor total do carrinho
 */
 
 // Objetivo 1 - quando clicar no botão de adicionar ao carrinho:
-//     - atualizar o contador
-//     - adicionar o produto no localStorage
-//     - atualizar a tabela HTML do carrinho
+//    - pegar os botões de adicionar ao carrinho do html
+//    - adicionar um evento de escuta nos botões para disparar um evento de clique
+//    - pegar as informações do produto clicado e adicionar no localStorage
+//    - atualizar o contador do carrinho de compras
+//    - renderizar a tabela do carrinho de compras
 
-//      Parte 1 - atualizar o contador
-//         - selecionar os botões de adicionar ao carrinho
+// OBJETIVO 1
+// - pegar os botões de adicionar ao carrinho do html
 const botoesAdicionarAoCarrinho = document.querySelectorAll('.adicionar-ao-carrinho');
 
-//         - adicionar um evento de escuta nesses botões
+// - adicionar um evento de escuta nos botões para disparar um evento de clique
 botoesAdicionarAoCarrinho.forEach(botao => {
     botao.addEventListener('click', (evento) => {
-        // -- pegar as informações do produto e adicionar no localStorage
+        // - pegar as informações do produto e adicionar no localStorage
         const elementoProduto = evento.target.closest('.produto');
         const produtoId = elementoProduto.dataset.id;
         const produtoNome = elementoProduto.querySelector('.nome').textContent;
@@ -52,6 +59,7 @@ botoesAdicionarAoCarrinho.forEach(botao => {
         }
 
         salvarProdutosNoCarrinho(carrinho);
+        atualizarContadorDoCarrinho();
     });
 });
 
@@ -63,3 +71,17 @@ function obterProdutosDoCarrinho() {
     const produtos = localStorage.getItem("carrinho");
     return produtos ? JSON.parse(produtos) : [];
 }
+
+// - atualizar o contador do carrinho de compras
+function atualizarContadorDoCarrinho() {
+    const carrinho = obterProdutosDoCarrinho();
+    let totalDeProdutos = 0;
+
+    carrinho.forEach(produto => {
+        totalDeProdutos += produto.quantidade;
+    });
+
+    document.getElementById('contador-carrinho').textContent = totalDeProdutos;
+}
+
+atualizarContadorDoCarrinho();
