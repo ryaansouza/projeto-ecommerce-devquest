@@ -86,12 +86,6 @@ td.td-quantidade input {
     text-align: center;
 }
 
-td.td-quantidade input::-webkit-outer-spin-button,
-td.td-quantidade input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
 td .btn-deletar {
     display: block;
     background-image: url(../assets/images/icone_deletar.svg);
