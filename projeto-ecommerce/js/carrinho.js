@@ -41,9 +41,8 @@ botoesAdicionarAoCarrinho.forEach(botao => {
         const produtoImagem = elementoProduto.querySelector('img').getAttribute('src');
         const produtoPreco = parseFloat(elementoProduto.querySelector('.preco').textContent.replace("R$ ", "").replace(".", "").replace(",", "."));
 
-        //buscar a lista de produtos do localStorage
         const carrinho = obterProdutosDoCarrinho();
-        //testar se o produto ja existe no carrinho
+
         const existeProduto = carrinho.find(produto => produto.id === produtoId);
         if (existeProduto) {
             existeProduto.quantidade += 1;
@@ -84,7 +83,6 @@ function atualizarContadorDoCarrinho() {
 
     document.getElementById('contador-carrinho').textContent = totalDeProdutos;
 }
-
 atualizarContadorDoCarrinho();
 
 //  - renderizar a tabela do carrinho de compras
@@ -109,5 +107,23 @@ function renderizarTabelaDoCarrinho() {
         corpoTabela.appendChild(tr);
     });
 }
-
 renderizarTabelaDoCarrinho();
+
+// Objetivo 2 - remover produtos do carrinho:
+// - pegar botão de deletar do html
+const corpoTabela = document.querySelector('#modal-1-content table tbody');
+corpoTabela.addEventListener('click', (evento) => {
+    if (evento.target.classList.contains('btn-deletar')) {
+        const id = evento.target.dataset.id;
+        removerProdutoDoCarrinho(id);
+    }
+});
+
+
+function removerProdutoDoCarrinho(id) {
+    const produtos = obterProdutosDoCarrinho();
+    const carrinhoAtualizado = produtos.filter(produto => produto.id !== id);
+    salvarProdutosNoCarrinho(carrinhoAtualizado);
+    atualizarContadorDoCarrinho();
+    renderizarTabelaDoCarrinho();
+}
