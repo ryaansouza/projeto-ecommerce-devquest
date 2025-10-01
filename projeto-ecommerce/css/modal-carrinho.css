@@ -107,11 +107,92 @@ td .btn-deletar {
     margin-top: 3rem;
 }
 
+.container-cep-frete {
+    display: flex;
+    flex-direction: column;
+    margin: 16px 0;
+    gap: 8px;
+}
+
+.container-cep-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+#input-cep {
+    padding: 8px 12px;
+    width: 100%;
+    max-width: 220px;
+    border: 1px solid var(--cor-verde-agua);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--cor-verde-agua);
+    font-size: 1rem;
+    font-weight: 400;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+#input-cep::placeholder {
+    color: var(--cor-verde-agua);
+    opacity: 0.5;
+    font-weight: 400;
+}
+
+#btn-calcular-frete {
+    padding: 8px 20px;
+    border: 1px solid var(--cor-verde-agua);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--cor-verde-agua);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    outline: none;
+}
+
+#btn-calcular-frete:hover,
+#btn-calcular-frete:focus {
+    background: var(--cor-verde-agua);
+    color: var(--cor-cinza-escuro);
+}
+
+.container-preco-total {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+    font-size: 1rem;
+}
+
+#subtotal-pedidos, #valor-frete {
+    color: var(--cor-cinza-clara);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#valor-frete {
+    display: none;
+}
+
+#subtotal-pedidos .valor, #valor-frete .valor {
+    color: var(--cor-verde-agua);
+    font-weight: 500px;
+}
+
 .total-carrinho {
+    display: block;
     background-color: var(--cor-cinza-escuro);
+    color: var(--cor-verde-agua);
     width: 100%;
     padding: 1rem 0.5rem;
+    margin-top: 8px;
     font-size: 2rem;
+    font-weight: bold;
     letter-spacing: 0.1rem;
 }
 

@@ -76,7 +76,7 @@ function atualizarValorTotalDoCarrinho() {
     const produtos = obterProdutosDoCarrinho();
     // Refatoração: uso de reduce para somar valores
     const valorTotal = produtos.reduce((total, produto) => total + produto.preco * produto.quantidade, 0);
-    document.querySelector(SELECTORS.totalCarrinho).textContent = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+    document.querySelector(SELECTORS.totalCarrinho).textContent = `Total: R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
 }
 
 // Atualiza todas as partes do carrinho
