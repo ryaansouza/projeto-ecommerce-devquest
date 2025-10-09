@@ -1,0 +1,23 @@
+[
+  {
+    "id": "camiseta-roxa",
+    "height": 4,
+    "length": 30,
+    "width": 25,
+    "weight": 0.25
+  },
+  {
+    "id": "caneca-devemdobro",
+    "height": 10,
+    "length": 12,
+    "width": 8,
+    "weight": 0.35
+  },
+  {
+    "id": "caneca-preta-devemdobro",
+    "height": 10,
+    "length": 12,
+    "width": 8,
+    "weight": 0.35
+  }
+]

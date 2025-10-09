@@ -141,6 +141,13 @@ td .btn-deletar {
     font-weight: 400;
 }
 
+.erro-cep {
+    color: #ff4d4d;
+    font-size: 0.875rem;
+    margin-top: 4px;
+    display: none;
+}
+
 #btn-calcular-frete {
     padding: 8px 20px;
     border: 1px solid var(--cor-verde-agua);

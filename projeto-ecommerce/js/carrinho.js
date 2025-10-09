@@ -1,35 +1,15 @@
-/*
-Objetivo 1 - quando clicar no botão de adicionar ao carrinho:
-    - pegar os botões de adicionar ao carrinho do html
-    - adicionar um evento de escuta nos botões para disparar um evento de clique
-    - pegar as informações do produto clicado e adicionar no localStorage
-    - atualizar o contador do carrinho de compras
-    - renderizar a tabela do carrinho de compras
-
-Objetivo 2 - remover produtos do carrinho:
-    - pegar botão de deletar do html
-    - adicionar evento de escuta no tbody para disparar um evento de clique quando clicado no botão de deletar (filho)
-    - remover do localStorage
-    - atualizar o html do carrinho, retirando o produto deletado
-
-Objetivo 3 - atualizar valores do carrinho:
-    - adicionar evento de escuta no input do tbody
-    - atualizar o valor total do produto
-    - atualizar o valor total do carrinho
-*/
-
-
-// Refatoração: organização em funções pequenas, nomes claros, early return, DRY, comentários explicativos
-
-// Utiliza const para elementos que não mudam, e let apenas quando necessário
+// Função para enviar POST ao n8n com async/await
 const SELECTORS = {
-    botoesAdicionar: '.adicionar-ao-carrinho',
-    contadorCarrinho: '#contador-carrinho',
-    corpoTabela: '#modal-1-content table tbody',
-    totalCarrinho: '#total-carrinho',
+    htmlBotoesAdicionar: '.adicionar-ao-carrinho',
+    htmlContadorCarrinho: '#contador-carrinho',
+    htmlCorpoTabela: '#modal-1-content table tbody',
+    htmlTotalCarrinho: '#total-carrinho',
+    htmlSubTotalPedidos: '#subtotal-pedidos .valor',
+    htmlBotaoCalcularFrete: '#btn-calcular-frete',
+    htmlInputCep: '#input-cep',
+    htmlErroCep: '.erro-cep',
 };
 
-// Utiliza funções puras para manipulação do localStorage
 function salvarProdutosNoCarrinho(carrinho) {
     localStorage.setItem('carrinho', JSON.stringify(carrinho));
 }
@@ -39,18 +19,15 @@ function obterProdutosDoCarrinho() {
     return produtos ? JSON.parse(produtos) : [];
 }
 
-// Atualiza o contador de produtos no carrinho
 function atualizarContadorDoCarrinho() {
     const produtos = obterProdutosDoCarrinho();
-    // Refatoração: uso de reduce para somar quantidades
     const totalDeProdutos = produtos.reduce((total, produto) => total + produto.quantidade, 0);
-    document.querySelector(SELECTORS.contadorCarrinho).textContent = totalDeProdutos;
+    document.querySelector(SELECTORS.htmlContadorCarrinho).textContent = totalDeProdutos;
 }
 
-// Renderiza a tabela do carrinho
 function renderizarTabelaDoCarrinho() {
     const produtos = obterProdutosDoCarrinho();
-    const corpoTabela = document.querySelector(SELECTORS.corpoTabela);
+    const corpoTabela = document.querySelector(SELECTORS.htmlCorpoTabela);
     corpoTabela.innerHTML = '';
 
     produtos.forEach(produto => {
@@ -71,22 +48,19 @@ function renderizarTabelaDoCarrinho() {
     });
 }
 
-// Atualiza o valor total do carrinho
 function atualizarValorTotalDoCarrinho() {
     const produtos = obterProdutosDoCarrinho();
-    // Refatoração: uso de reduce para somar valores
     const valorTotal = produtos.reduce((total, produto) => total + produto.preco * produto.quantidade, 0);
-    document.querySelector(SELECTORS.totalCarrinho).textContent = `Total: R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+    document.querySelector(SELECTORS.htmlTotalCarrinho).textContent = `Total: R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+    document.querySelector(SELECTORS.htmlSubTotalPedidos).textContent = ` R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
 }
 
-// Atualiza todas as partes do carrinho
 function atualizarCarrinhoETabela() {
     atualizarContadorDoCarrinho();
     renderizarTabelaDoCarrinho();
     atualizarValorTotalDoCarrinho();
 }
 
-// Adiciona produto ao carrinho
 function adicionarProdutoAoCarrinho(elementoProduto) {
     const produtoId = elementoProduto.dataset.id;
     const produtoNome = elementoProduto.querySelector('.nome').textContent;
@@ -117,7 +91,6 @@ function adicionarProdutoAoCarrinho(elementoProduto) {
     atualizarCarrinhoETabela();
 }
 
-// Remove produto do carrinho
 function removerProdutoDoCarrinho(id) {
     let carrinho = obterProdutosDoCarrinho();
     carrinho = carrinho.filter(produto => produto.id !== id);
@@ -125,7 +98,6 @@ function removerProdutoDoCarrinho(id) {
     atualizarCarrinhoETabela();
 }
 
-// Atualiza quantidade de um produto
 function atualizarQuantidadeProduto(id, novaQuantidade) {
     let carrinho = obterProdutosDoCarrinho();
     const produto = carrinho.find(produto => produto.id === id);
@@ -135,10 +107,52 @@ function atualizarQuantidadeProduto(id, novaQuantidade) {
     atualizarCarrinhoETabela();
 }
 
+function validarCep(cep) {
+    const regexCep = /^[0-9]{5}-?[0-9]{3}$/;
+    return regexCep.test(cep);
+}
+
+async function calcularFrete(cep) {
+    const url = 'https://ryansouza.app.n8n.cloud/webhook/f2ce82e6-9767-49eb-812e-086e735c09fe';
+    try {
+        const medidasResponse = await fetch('./js/medidas-produtos.json');
+        const medidas = await medidasResponse.json();
+
+        const produtos = obterProdutosDoCarrinho();
+        const products = produtos.map(produto => {
+            const medida = medidas.find(medida => medida.id === produto.id);
+            return {
+                quantity: produto.quantidade,
+                height: medida ? medida.height : 0,
+                length: medida ? medida.length : 0,
+                width: medida ? medida.width : 0,
+                weight: medida ? medida.weight : 0,
+            };
+        });
+
+        const resposta = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cep, products })
+        });
+
+        if (!resposta.ok) throw new Error('Erro ao calcular frete');
+        const resultado = await resposta.json();
+        console.log(resultado);
+        console.log(resultado.price);
+        return resultado.price;
+
+    } catch (error) {
+        console.error('Erro ao calcular frete:', error);
+        return null;
+    }
+}
+
 // EVENTOS
 
-// Evento: adicionar ao carrinho
-document.querySelectorAll(SELECTORS.botoesAdicionar).forEach(botao => {
+document.querySelectorAll(SELECTORS.htmlBotoesAdicionar).forEach(botao => {
     botao.addEventListener('click', evento => {
         const elementoProduto = evento.target.closest('.produto');
         if (!elementoProduto) return;
@@ -146,8 +160,8 @@ document.querySelectorAll(SELECTORS.botoesAdicionar).forEach(botao => {
     });
 });
 
-// Evento: remover produto ou atualizar quantidade
-const corpoTabela = document.querySelector(SELECTORS.corpoTabela);
+
+const corpoTabela = document.querySelector(SELECTORS.htmlCorpoTabela);
 corpoTabela.addEventListener('click', evento => {
     if (evento.target.classList.contains('btn-deletar')) {
         removerProdutoDoCarrinho(evento.target.dataset.id);
@@ -163,13 +177,32 @@ corpoTabela.addEventListener('input', evento => {
     }
 });
 
+const btnCalcularFrete = document.querySelector(SELECTORS.htmlBotaoCalcularFrete);
+btnCalcularFrete.addEventListener('click', async () => {
+    const inputCep = document.querySelector(SELECTORS.htmlInputCep);
+    const erroCep = document.querySelector(SELECTORS.htmlErroCep);
+
+    const cep = inputCep.value.trim();
+
+    if(!validarCep(cep)){
+        erroCep.textContent = "CEP inválido.";
+        erroCep.style.display = "block";
+        return
+    }
+    erroCep.style.display = "none";
+
+    const valorFrete = await calcularFrete(cep);
+    const precoFreteFormatado = valorFrete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+	document.querySelector("#valor-frete .valor").textContent = precoFreteFormatado;
+	document.querySelector("#valor-frete").style.display = "flex";
+
+    const totalCarrinhoElemento = document.querySelector(SELECTORS.htmlTotalCarrinho);
+	const valorTotalCarrinho = parseFloat(totalCarrinhoElemento.textContent.replace("Total: R$ ", "").replace('.', ',').replace(',', '.'));
+
+    const totalComFrete = valorTotalCarrinho + valorFrete;
+	const totalComFreteFormatado = totalComFrete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+	totalCarrinhoElemento.textContent = `Total: R$ ${totalComFreteFormatado}`;
+});
+
 // Inicialização
 atualizarCarrinhoETabela();
-
-// MELHORIAS:
-// - Modularização: cada função tem uma responsabilidade clara.
-// - Early return: evita execuções desnecessárias.
-// - DRY: evita repetição de código.
-// - Uso de reduce para somas, tornando o código mais limpo e performático.
-// - Nomes de funções e variáveis mais claros e padronizados.
-// - Comentários explicando cada melhoria.
