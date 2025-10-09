@@ -177,9 +177,15 @@ corpoTabela.addEventListener('input', evento => {
     }
 });
 
+const inputCep = document.querySelector(SELECTORS.htmlInputCep);
+inputCep.addEventListener("keydown", () => {
+    if(event.key === "Enter") {
+        btnCalcularFrete.click();
+    }
+});
+
 const btnCalcularFrete = document.querySelector(SELECTORS.htmlBotaoCalcularFrete);
 btnCalcularFrete.addEventListener('click', async () => {
-    const inputCep = document.querySelector(SELECTORS.htmlInputCep);
     const erroCep = document.querySelector(SELECTORS.htmlErroCep);
 
     const cep = inputCep.value.trim();
