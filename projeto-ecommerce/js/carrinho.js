@@ -113,6 +113,11 @@ function validarCep(cep) {
 }
 
 async function calcularFrete(cep) {
+    btnCalcularFrete.disabled = true;
+    const textoOriginalDoBotaoDeFrete = btnCalcularFrete.textContent;
+    btnCalcularFrete.textContent = "Calculando frete...";
+
+
     const url = 'https://ryansouza.app.n8n.cloud/webhook/f2ce82e6-9767-49eb-812e-086e735c09fe';
     try {
         const medidasResponse = await fetch('./js/medidas-produtos.json');
@@ -147,6 +152,9 @@ async function calcularFrete(cep) {
     } catch (error) {
         console.error('Erro ao calcular frete:', error);
         return null;
+    } finally {
+        btnCalcularFrete.disabled = false;
+        btnCalcularFrete.textContent = textoOriginalDoBotaoDeFrete;
     }
 }
 
