@@ -10,8 +10,9 @@ const SELECTORS = {
     htmlInputCep: '#input-cep',
     htmlErroCep: '.erro-cep',
 };
-
-atualizarCarrinhoETabela();
+const corpoTabela = document.querySelector(SELECTORS.htmlCorpoTabela);
+const inputCep = document.querySelector(SELECTORS.htmlInputCep);
+const btnCalcularFrete = document.querySelector(SELECTORS.htmlBotaoCalcularFrete);
 
 document.querySelectorAll(SELECTORS.htmlBotoesAdicionar).forEach(botao => {
     botao.addEventListener('click', evento => {
@@ -21,7 +22,6 @@ document.querySelectorAll(SELECTORS.htmlBotoesAdicionar).forEach(botao => {
     });
 });
 
-const corpoTabela = document.querySelector(SELECTORS.htmlCorpoTabela);
 corpoTabela.addEventListener('click', evento => {
     if (evento.target.classList.contains('btn-deletar')) {
         removerProdutoDoCarrinho(evento.target.dataset.id);
@@ -37,14 +37,12 @@ corpoTabela.addEventListener('input', evento => {
     }
 });
 
-const inputCep = document.querySelector(SELECTORS.htmlInputCep);
 inputCep.addEventListener("keydown", () => {
     if (event.key === "Enter") {
         btnCalcularFrete.click();
     }
 });
 
-const btnCalcularFrete = document.querySelector(SELECTORS.htmlBotaoCalcularFrete);
 btnCalcularFrete.addEventListener('click', async () => {
     const erroCep = document.querySelector(SELECTORS.htmlErroCep);
 
@@ -70,3 +68,5 @@ btnCalcularFrete.addEventListener('click', async () => {
     const totalComFreteFormatado = totalComFrete.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     totalCarrinhoElemento.textContent = `Total: R$ ${totalComFreteFormatado}`;
 });
+
+atualizarCarrinhoETabela();
